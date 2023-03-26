@@ -1,3 +1,5 @@
+from setuptools import setup
+
 setup(
     name="mcmc_test",
     version=1.0,
