@@ -23,5 +23,5 @@ parser = argparse.ArgumentParser()
 parser.add_argument("test_id")
 parser.add_argument("data_id")
 args = parser.parse_args()
-tests[args['test_id']](_load_data(args['data_id']))
+tests[args.test_id](_load_data(args.data_id))
 
