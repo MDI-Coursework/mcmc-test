@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 module = importlib.import_module(args.submission_id)
 func = getattr(module, args.test_id)
-data = _load_data(args.test_id)
+data = _load_data(args.data_id)
 
 for i in range(len(data)):
     assert func(*data[i, :-1]) == data[i, -1]
