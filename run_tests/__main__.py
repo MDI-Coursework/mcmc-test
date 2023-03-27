@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("submission_id")
 parser.add_argument("test_id")
 parser.add_argument("data_id")
-parser.add_argument("precision", default=4)
+parser.add_argument("--precision", default=4)
 args = parser.parse_args()
 
 module = importlib.import_module(args.submission_id)
