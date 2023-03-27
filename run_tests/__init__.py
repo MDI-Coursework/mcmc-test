@@ -19,11 +19,11 @@ def run(submission_id, test_id, data_id, precision):
                                        decimal=precision)
 
 
-def gen(submission_id, test_id, seed, num_data, prefix, input_dim,
-        low=None, high=None):
+def gen(submission_id, test_id, seed, num_data, prefix, low, high):
     module = importlib.import_module(submission_id)
     func = getattr(module, test_id)
 
+    input_dim = len(low)
     rng = np.random.default_rng(seed=seed)
     data = np.zeros((num_data, input_dim + 1))
     data[:, :4] = rng.uniform(low=low, high=high, size=(num_data, 4))
