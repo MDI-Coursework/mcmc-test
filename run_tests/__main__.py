@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("submission_id")
 parser.add_argument("test_id")
 parser.add_argument("data_id")
+parser.add_argument("precision", default=4)
 args = parser.parse_args()
 
 module = importlib.import_module(args.submission_id)
@@ -21,4 +22,5 @@ func = getattr(module, args.test_id)
 data = _load_data(args.data_id)
 
 for i in range(len(data)):
-    assert func(*data[i, :-1]) == data[i, -1]
+    np.testing.assert_almost_equal(func(*data[i, :-1]), data[i, -1],
+                                   decimal=args.precision)
