@@ -19,7 +19,7 @@ def run(submission_id, test_id, data_id, precision):
                                        decimal=precision)
 
 
-def gen(submission_id, test_id, seed, num_data, prefix, low, high):
+def gen(submission_id, test_id, seed, num_data, prefix, low, high, hook_f=None):
     module = importlib.import_module(submission_id)
     func = getattr(module, test_id)
 
@@ -29,6 +29,11 @@ def gen(submission_id, test_id, seed, num_data, prefix, low, high):
     data[:, :input_dim] = rng.uniform(low=low, high=high,
                                       size=(num_data, input_dim))
 
+    # apply hook if specified
+    if hook_f is not None:
+        data[:, :-1] = hook_f(data[:, :-1])
+
+    # apply the function
     for i in range(num_data):
         data[i, -1] = func(*data[i, :-1])
 
