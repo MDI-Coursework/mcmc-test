@@ -26,7 +26,8 @@ def gen(submission_id, test_id, seed, num_data, prefix, low, high):
     input_dim = len(low)
     rng = np.random.default_rng(seed=seed)
     data = np.zeros((num_data, input_dim + 1))
-    data[:, :4] = rng.uniform(low=low, high=high, size=(num_data, 4))
+    data[:, :input_dim] = rng.uniform(low=low, high=high,
+                                      size=(num_data, input_dim))
 
     for i in range(num_data):
         data[i, -1] = func(*data[i, :-1])
