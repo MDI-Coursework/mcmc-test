@@ -41,7 +41,7 @@ def gen(submission_id, test_id, prefix,
 
     # apply the function to inputs
     data = np.hstack((input_data, np.zeros((len(input_data), output_dim))))
-    for i in range(num_data):
+    for i in range(len(input_data)):
         data[i, -output_dim:] = func(*data[i, :-output_dim])
 
     np.savez('%s.npz' % prefix, data)
