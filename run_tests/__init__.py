@@ -9,33 +9,40 @@ def _load_data(data_id):
     return np.load(local_file)['arr_0']
 
 
-def run(submission_id, test_id, data_id, precision):
+def run(submission_id, test_id, data_id, precision, output_dim=1):
     module = importlib.import_module(submission_id)
     func = getattr(module, test_id)
     data = _load_data(data_id)
 
     for i in range(len(data)):
-        np.testing.assert_almost_equal(func(*data[i, :-1]), data[i, -1],
-                                       decimal=precision)
+        np.testing.assert_almost_equal(func(*data[i, :-output_dim]),
+                                       data[i, -output_dim:], decimal=precision)
 
 
-def gen(submission_id, test_id, seed, num_data, prefix, low, high, hook_f=None):
+def gen(submission_id, test_id, prefix,
+        output_dim=1, hook_f=None,
+        input_data=None,
+        seed=None, num_data=None, low=None, high=None):
     module = importlib.import_module(submission_id)
     func = getattr(module, test_id)
 
-    input_dim = len(low)
-    rng = np.random.default_rng(seed=seed)
-    data = np.zeros((num_data, input_dim + 1))
-    data[:, :input_dim] = rng.uniform(low=low, high=high,
-                                      size=(num_data, input_dim))
+    # Generate data if not provided
+    if input_data is None:
+        # uniformly sample input data
+        input_dim = len(low)
+        rng = np.random.default_rng(seed=seed)
+        input_data = rng.uniform(low=low, high=high,
+                                 size=(num_data, input_dim))
+        prefix = "%s_%016d_%05d" % (prefix, seed, num_data)
 
-    # apply hook if specified
+    # apply hook / input data transformation if needed
     if hook_f is not None:
-        data[:, :-1] = hook_f(data[:, :-1])
+        input_data = hook_f(input_data)
 
-    # apply the function
+    # apply the function to inputs
+    data = np.hstack((input_data, np.zeros(len(input_data), output_dim)))
     for i in range(num_data):
-        data[i, -1] = func(*data[i, :-1])
+        data[i, -output_dim:] = func(*data[i, :-output_dim])
 
-    np.savez('%s_%016d_%04d.npz' % (prefix, seed, num_data), data)
+    np.savez('%s.npz' % prefix, data)
     return data
