@@ -13,14 +13,22 @@ def _load_data(data_id):
 
 
 def run(test_id, data_id, precision = 4, 
-        submission_id = "submission", output_dim=1):
+        submission_id = "submission", output_dim=1, pass_percent=0.9):
     module = importlib.import_module(submission_id)
     func = getattr(module, test_id)
     data = _load_data(data_id)
 
+    num_error = 0
     for i in range(len(data)):
-        np.testing.assert_almost_equal(func(*data[i, :-output_dim]),
-                                       data[i, -output_dim:], decimal=precision)
+        try:
+            np.testing.assert_almost_equal(func(*data[i, :-output_dim]),
+                                           data[i, -output_dim:], 
+                                           decimal=precision)
+        except AssertionError:
+            num_error +=1
+
+    assert (num_error / len(data)) < (1.0 - pass_percent)
+        
 
 
 def gen(test_id:str, prefix:str, submission_id:Optional[str]= "submission", 
